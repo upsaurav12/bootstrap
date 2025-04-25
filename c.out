@@ -1,0 +1,10 @@
+mode: set
+github.com/upsaurav12/bootstrap/main.go:9.13,11.2 1 0
+github.com/upsaurav12/bootstrap/cmd/new.go:18.47,21.3 2 0
+github.com/upsaurav12/bootstrap/cmd/new.go:24.13,26.2 1 0
+github.com/upsaurav12/bootstrap/cmd/new.go:28.43,30.16 2 0
+github.com/upsaurav12/bootstrap/cmd/new.go:30.16,33.3 2 0
+github.com/upsaurav12/bootstrap/cmd/new.go:35.2,35.56 1 0
+github.com/upsaurav12/bootstrap/cmd/root.go:19.16,21.16 2 0
+github.com/upsaurav12/bootstrap/cmd/root.go:21.16,23.3 1 0
+github.com/upsaurav12/bootstrap/cmd/root.go:26.13,28.2 1 0
