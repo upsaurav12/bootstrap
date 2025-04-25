@@ -6,8 +6,10 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/spf13/cobra"
@@ -53,68 +55,44 @@ func createNewProject(projectName string, template string, out io.Writer) {
 		return
 	}
 
-	// Print the template that was passed
+	err = renderTemplateDir("templates/"+template, projectName, TemplateData{
+		ModuleName: projectName,
+	})
 
-	createGoTemplate(projectName, out)
-
-	// Print success message
+	if err != nil {
+		fmt.Fprintf(out, "Error rendering templates", err)
+	}
 	fmt.Fprintf(out, "Created '%s' successfully\n", projectName)
 }
 
-func createGoTemplate(projectName string, out io.Writer) {
-	// Define the go.mod template content
-	goModTemplate := `module {{.ModuleName}}
-
-go 1.18
-`
-
-	// Define the main.go content
-	mainGoFile := filepath.Join(projectName, "main.go")
-	mainGoContent := `package main
-
-import "fmt"
-
-func main() {
-	fmt.Println("Hello, world!")
+type TemplateData struct {
+	ModuleName string
 }
-`
 
-	// Create go.mod file and apply the template
-	goModFile := filepath.Join(projectName, "go.mod")
-	tmpl, err := template.New("go.mod").Parse(goModTemplate)
-	if err != nil {
-		fmt.Fprintf(out, "Error creating go.mod template: %v\n", err)
-		return
-	}
+func renderTemplateDir(templatePath, destinationPath string, data TemplateData) error {
+	return filepath.Walk(templatePath, func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 
-	// Create a file to write the go.mod content
-	goModFileContent := struct {
-		ModuleName string
-	}{
-		ModuleName: projectName, // Use project name as module name
-	}
+		relPath, _ := filepath.Rel(templatePath, path)
+		targetPath := filepath.Join(destinationPath, strings.TrimSuffix(relPath, ".tmpl"))
 
-	// Write go.mod file with parsed template
-	goModFileHandle, err := os.Create(goModFile)
-	if err != nil {
-		fmt.Fprintf(out, "Error creating go.mod file: %v\n", err)
-		return
-	}
-	defer goModFileHandle.Close()
+		if info.IsDir() {
+			return os.MkdirAll(targetPath, 0755)
+		}
 
-	err = tmpl.Execute(goModFileHandle, goModFileContent)
-	if err != nil {
-		fmt.Fprintf(out, "Error executing go.mod template: %v\n", err)
-		return
-	}
+		tmpl, err := template.ParseFiles(path)
+		if err != nil {
+			return err
+		}
 
-	// Create main.go file
-	err = os.WriteFile(mainGoFile, []byte(mainGoContent), 0644)
-	if err != nil {
-		fmt.Fprintf(out, "Error creating main.go: %v\n", err)
-		return
-	}
+		outFile, err := os.Create(targetPath)
+		if err != nil {
+			return err
+		}
+		defer outFile.Close()
 
-	// Print the result
-	fmt.Fprintf(out, "Go project created in '%s'\n", projectName)
+		return tmpl.Execute(outFile, data)
+	})
 }
