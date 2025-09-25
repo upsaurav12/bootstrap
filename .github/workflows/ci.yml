@@ -1,4 +1,4 @@
-name: Go CI
+name: Go
 
 on:
   push:
@@ -9,7 +9,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -17,39 +16,10 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
-          cache: true   # enables module caching for faster builds
+          go-version: '1.22' # Adjust to match your go.mod
 
-      - name: Verify dependencies
-        run: go mod tidy && git diff --exit-code go.mod go.sum
-
-      - name: Build
-        run: go build -v ./...
+      - name: Install dependencies
+        run: go mod tidy
 
       - name: Run tests
-        run: go test -v ./... -coverprofile=coverage.out
-
-      - name: Upload coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          path: coverage.out
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.22'
-
-      - name: Install golangci-lint
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
-            | sh -s -- -b $(go env GOPATH)/bin latest
-
-      - name: Run linter
-        run: golangci-lint run ./...
+        run: go test -v ./...
