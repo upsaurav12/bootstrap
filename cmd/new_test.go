@@ -23,7 +23,7 @@ func TestCreateNewProject_Success(t *testing.T) {
 	assert.NoError(t, err, "Failed to change to temp directory")
 
 	var out bytes.Buffer
-	createNewProject(projectName, "gin", "go", &out)
+	createNewProject(projectName, "go", &out)
 
 	// Check if directory was created
 	_, err = os.Stat(fullPath)
@@ -59,7 +59,7 @@ func TestCreateNewProject_InvalidPath(t *testing.T) {
 	invalidPath := filepath.Join(tempDir, projectName)
 
 	var out bytes.Buffer
-	createNewProject(projectName, "gin", "go ", &out)
+	createNewProject(projectName, "go ", &out)
 
 	_, err := os.Stat(invalidPath)
 	assert.Error(t, err, "Expected no directory to be created")

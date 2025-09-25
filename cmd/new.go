@@ -27,32 +27,26 @@ var newCmd = &cobra.Command{
 		}
 
 		// Get the template flag value from the command context
-		tmpl, _ := cmd.Flags().GetString("type")
+		tmpl, _ := cmd.Flags().GetString("template")
 
 		// Get the project name (first argument)
 		dirName := args[0]
 
 		// Create the new project
-		createNewProject(dirName, projectRouter, tmpl, cmd.OutOrStdout())
+		createNewProject(dirName, tmpl, cmd.OutOrStdout())
 	},
 }
-
-var projectType string
-var projectPort string
-var projectRouter string
 
 func init() {
 	// Add the new command to the rootCmd
 	rootCmd.AddCommand(newCmd)
 
 	// Define the --template flag for this command
-	newCmd.Flags().StringVar(&projectType, "type", "", "type of the project")
-	newCmd.Flags().StringVar(&projectPort, "port", "", "port of the project")
-	newCmd.Flags().StringVar(&projectRouter, "router", "", "router of the project")
+	newCmd.Flags().StringP("template", "t", "", "Specify a project template (eg, go, node, python)")
 }
 
 // Function to create the project
-func createNewProject(projectName string, projectRouter string, template string, out io.Writer) {
+func createNewProject(projectName string, template string, out io.Writer) {
 	// Attempt to create the project directory
 	err := os.Mkdir(projectName, 0755)
 	if err != nil {
@@ -62,9 +56,8 @@ func createNewProject(projectName string, projectRouter string, template string,
 
 	// Print the template that was passed
 
-	renderTemplateDir("templates/"+template+"/"+projectRouter, projectName, TemplateData{
+	renderTemplateDir("templates/"+template, projectName, TemplateData{
 		ModuleName: projectName,
-		PortName:   projectPort,
 	})
 
 	// Print success message
@@ -73,7 +66,6 @@ func createNewProject(projectName string, projectRouter string, template string,
 
 type TemplateData struct {
 	ModuleName string
-	PortName   string
 }
 
 func renderTemplateDir(templatePath, destinationPath string, data TemplateData) error {
