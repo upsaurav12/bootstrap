@@ -1,15 +1,27 @@
-# Bootstrap CLI Tool
+# Go Bootstrapper 🐹⚡
 
-Bootstrap is a command-line tool designed to help developers quickly set up new projects using predefined templates. It supports various programming languages and frameworks, such as Go, Node.js, Python, and custom templates. This tool automates the process of creating new projects, initializing Git repositories, adding configuration files, and more.
+[![Go Version](https://img.shields.io/badge/Go-1.22-blue)](https://go.dev/)
+[![Build Status](https://github.com/upsaurav12/bootstrapper/actions/workflows/go.yml/badge.svg)](https://github.com/upsaurav12/bootstrapper/actions)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+A **CLI tool** to scaffold Go projects quickly — think of it like [Vite](https://vitejs.dev/), but for **Golang developers**.  
+It saves you from boilerplate, folder structure confusion, and manual dependency setup.
 
 ---
 
-## Features
+## ✨ Features
+- 🚀 Create new Go projects in seconds
+- 📦 Preconfigured templates (REST API with Gin, Chi, etc.)
+- 🗂 Standardized folder structure (`cmd/`, `internal/`, `pkg/`)
+- 🔌 Incrementally add dependencies (DB, gRPC, logging, etc.)
+- 🧪 Built-in **Makefile** for build, test, and lint
+- ⚙️ GitHub Actions workflow for CI/CD
+- 🛠 Extensible via templates
 
-### 1. **Create a New Project**
+---
 
-With the `new` command, you can easily create a new project folder with a specified template. You can also specify a project name and additional flags for customizing the project setup.
+## 📂 Example Project Structure
 
-#### Example Command:
-```bash
-./bootstrap new my-go-project --template go
+When you run `bootstrap new myapp --type=rest --router=gin --port=9000`,  
+you’ll get something like this:
+

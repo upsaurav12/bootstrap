@@ -62,6 +62,12 @@ func createNewProject(projectName string, projectRouter string, template string,
 
 	// Print the template that was passed
 
+	// Always add README + Makefile from common
+	renderTemplateDir("templates/common", projectName, TemplateData{
+		ModuleName: projectName,
+		PortName:   projectPort,
+	})
+
 	renderTemplateDir("templates/"+template+"/"+projectRouter, projectName, TemplateData{
 		ModuleName: projectName,
 		PortName:   projectPort,

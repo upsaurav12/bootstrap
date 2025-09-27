@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"{{ .ModuleName }}/internal/api"
+	"{{ .ModuleName }}/internal/router"
 	"{{ .ModuleName }}/internal/config"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +16,7 @@ func main() {
 	r := gin.Default()
 
 	// Register routes
-	api.RegisterRoutes(r)
+	router.RegisterRoutes(r)
 
 	// Start server
 	log.Printf("Server starting on port %s...", cfg.Port)
