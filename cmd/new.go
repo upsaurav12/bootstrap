@@ -59,8 +59,15 @@ func createNewProject(projectName string, projectRouter string, template string,
 		fmt.Fprintf(out, "Error creating directory: %v\n", err)
 		return
 	}
+	// Print the template that was passed
 
-	err = renderTemplateDir("rest/"+projectRouter, projectName, TemplateData{
+	// Always add README + Makefile from common
+	renderTemplateDir("templates/common", projectName, TemplateData{
+		ModuleName: projectName,
+		PortName:   projectPort,
+	})
+
+	renderTemplateDir("templates/"+template+"/"+projectRouter, projectName, TemplateData{
 		ModuleName: projectName,
 		PortName:   projectPort,
 	})
