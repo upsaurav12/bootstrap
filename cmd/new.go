@@ -6,12 +6,14 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
 
 	"github.com/spf13/cobra"
+	"github.com/upsaurav12/bootstrap/templates"
 )
 
 // newCmd represents the new command
@@ -51,23 +53,22 @@ func init() {
 	newCmd.Flags().StringVar(&projectRouter, "router", "", "router of the project")
 }
 
-// Function to create the project
 func createNewProject(projectName string, projectRouter string, template string, out io.Writer) {
-	// Attempt to create the project directory
 	err := os.Mkdir(projectName, 0755)
 	if err != nil {
 		fmt.Fprintf(out, "Error creating directory: %v\n", err)
 		return
 	}
 
-	// Print the template that was passed
-
-	renderTemplateDir("templates/"+template+"/"+projectRouter, projectName, TemplateData{
+	err = renderTemplateDir("rest/"+projectRouter, projectName, TemplateData{
 		ModuleName: projectName,
 		PortName:   projectPort,
 	})
+	if err != nil {
+		fmt.Fprintf(out, "Error rendering templates: %v\n", err)
+		return
+	}
 
-	// Print success message
 	fmt.Fprintf(out, "Created '%s' successfully\n", projectName)
 }
 
@@ -77,7 +78,7 @@ type TemplateData struct {
 }
 
 func renderTemplateDir(templatePath, destinationPath string, data TemplateData) error {
-	return filepath.Walk(templatePath, func(path string, info os.FileInfo, err error) error {
+	return fs.WalkDir(templates.FS, templatePath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -85,24 +86,29 @@ func renderTemplateDir(templatePath, destinationPath string, data TemplateData) 
 		relPath, _ := filepath.Rel(templatePath, path)
 		targetPath := filepath.Join(destinationPath, strings.TrimSuffix(relPath, ".tmpl"))
 
-		if info.IsDir() {
+		if d.IsDir() {
 			return os.MkdirAll(targetPath, 0755)
 		}
 
-		// Read and parse template
-		tmpl, err := template.ParseFiles(path)
+		// Read file from embed.FS
+		content, err := templates.FS.ReadFile(path)
 		if err != nil {
 			return err
 		}
 
-		// Create output file
+		// Parse template
+		tmpl, err := template.New(filepath.Base(path)).Parse(string(content))
+		if err != nil {
+			return err
+		}
+
+		// Create destination file
 		outFile, err := os.Create(targetPath)
 		if err != nil {
 			return err
 		}
 		defer outFile.Close()
 
-		// Execute template
 		return tmpl.Execute(outFile, data)
 	})
 }

@@ -15,6 +15,6 @@ just use CLI tools to generate the pre-configured templates.
 ## 📦 Installation
 
 ```bash
-go install github.com/upsaurav12/bootstrapper@latest
+go install github.com/upsaurav12/bootstrap@latest
 
 

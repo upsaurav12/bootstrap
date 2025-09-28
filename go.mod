@@ -1,4 +1,4 @@
-module github.com/upsaurav12/bootstrapper
+module github.com/upsaurav12/bootstrap
 
 go 1.23.6
 
